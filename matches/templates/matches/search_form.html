@@ -1,0 +1,23 @@
+{% extends "feed.html" %}
+{% load matches_inclusion_tags %}
+
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="matchSearchForm">
+        {% include "matches/memorable_matches_header.html" %}
+
+        <div class="ctnForm col-xs-12">
+            <div class="header"><i class="fa fa-search"></i> Procurar partidas</div>
+            <div class="body">
+                {% matches_search_component %}
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    {% block search_results %}{% endblock search_results %}
+
+{% endblock content %}

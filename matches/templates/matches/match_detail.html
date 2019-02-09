@@ -1,0 +1,172 @@
+{% extends "feed.html" %}
+
+{% load i18n %}
+{% load comments_inclusion_tags %}
+{% load static %}
+
+{% block content %}
+    {{ block.super }}
+
+
+    <div class="matchDetail">
+
+        {% include "matches/memorable_matches_header.html" %}
+
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-10 col-md-push-1">
+                        <div class="ctnDetails">
+                            <div class="teams">
+                                <span class="team">
+                                    {% if match.home_team.team.logo %}
+                                        <img src="{% get_media_prefix %}teams_logos/{{ match.home_team.team.logo }}" alt="{{ match.home_team.team }}" />
+                                        <br/>
+                                    {% endif %}
+                                    {{ match.home_team.team }}
+                                </span>
+                                <span class="badge">{{ match.home_team_goals }}</span>
+
+                                <span class="versus">X</span>
+
+                                <span class="badge">{{ match.away_team_goals }}</span>
+                                <span class="team">
+                                    {% if match.home_team.team.logo %}
+                                        <img src="{% get_media_prefix %}teams_logos/{{ match.away_team.team.logo }}" alt="{{ match.away_team.team }}" />
+                                        <br/>
+                                    {% endif %}
+                                    {{ match.away_team.team }}
+                                </span>
+                            </div>
+                            <div class="where">
+                                <span class="championship">{{ match.championship.championship.name }} ({{ match.match_date.year }})</span>
+                                {% if match.stadium.full_name %}
+                                <br/>
+                                <span class="stadium">{{ match.stadium.full_name }}</span>
+                                {% endif %}
+                                <br/>
+                                <span class="fullDate">{{ match.match_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-10 col-md-push-1 playersList">
+                        <div>
+                            <div class="row">
+                                <div class="col-xs-6 homeTeam">
+                                    {% for p in players %}
+                                        {% if p.team == match.home_team %}
+                                            <div class="row">
+                                                <div class="col-xs-3 position">
+                                                    {{ p.position }}
+                                                </div>
+                                                <div class="col-xs-9">
+                                                    {% for g in goals %}
+                                                        {% if g.scored_by == p.player %}
+                                                            <i class="fa fa-futbol-o"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% for s in substitutions %}
+                                                        {% if s.player_in == p.player %}
+                                                            <i class="fa fa-arrow-down playerIn"></i>
+                                                        {% endif %}
+                                                        {% if s.player_out == p.player %}
+                                                            <i class="fa fa-arrow-up playerOut"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if p.red_card %}
+                                                        <i class="fa fa-square redCard"></i>
+                                                    {% endif %}
+
+                                                    {% if p.first_yellow_card %}
+                                                        <i class="fa fa-square yellowCard"></i>
+                                                    {% endif %}
+
+                                                    {{ p.player }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="col-xs-6 awayTeam">
+                                    {% for p in players %}
+                                        {% if p.team == match.away_team %}
+                                            <div class="row">
+                                                <div class="col-xs-9">
+                                                    {{ p.player }}
+
+                                                    {% if p.first_yellow_card %}
+                                                        <i class="fa fa-square yellowCard"></i>
+                                                    {% endif %}
+
+                                                    {% if p.red_card %}
+                                                        <i class="fa fa-square redCard"></i>
+                                                    {% endif %}
+
+                                                    {% for s in substitutions %}
+                                                        {% if s.player_in == p.player %}
+                                                            <i class="fa fa-arrow-down playerIn"></i>
+                                                        {% endif %}
+                                                        {% if s.player_out == p.player %}
+                                                            <i class="fa fa-arrow-up playerOut"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% for g in goals %}
+                                                        {% if g.scored_by == p.player %}
+                                                            <i class="fa fa-futbol-o"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="col-xs-3 position">
+                                                    {{ p.position }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <br/><br/>
+            </div>
+
+            <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7">
+                        Comentários
+                    </div>
+                    <div class="col-xs-12 col-sm-5">
+                        <select name="commentType" id="commentType" data-match="{{ match.id }}" class="form-control">
+                            <option value="all">Comentários públicos</option>
+                            <option value="friends">Comentários dos meus amigos</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12">
+                {% for ut in friends_threads %}
+                    {% comments_widget ut.thread 0 user_profile False %}
+                {% endfor %}
+                {% comments_widget user_private_thread.thread 0 user_profile %}
+            </div>
+
+            <div class="col-xs-12" style="display: none">
+
+                {% comments_widget match.public_thread 0 user_profile %}
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

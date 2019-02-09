@@ -1,0 +1,82 @@
+{% extends "matches/search_form.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block search_results %}
+
+    <div class="match_search_result">
+
+        <p class="results_title">
+            Buscando por jogos
+
+{% if search_year > 0 %}<span class="term">disputados em {{ search_year }}</span>{% endif %}
+{% if team_name|length %}por <span class="term">"{{ team_name }}"</span>{% endif %}
+{% if championship_name|length %}no campeonato <span class="term">"{{ championship_name }}"</span>{% endif %}:
+        </p>
+        <br/>
+
+        <p class="results_sub_title">Foram encontrados {{ resultTotal }} resultados</p><br/>
+        <p class="results_sub_title">Exibindo de {{ matches.start_index }} até {{ matches.end_index }}:</p><br/>
+
+        {% for mat in matches %}
+            <div class="row result">
+                <div class="col-xs-3 home_team">
+                    {{ mat.home_team.team }}
+                    <span class="logo">
+                        {% if mat.home_team.team.logo %}
+                            <img src="{% get_media_prefix %}teams_logos/{{ mat.home_team.team.logo }}" alt="{{ mat.home_team.team.short_name }}" />
+                        {% endif %}
+                    </span>
+                    <span class="badge">{{ mat.home_team_goals }}</span><br/>
+                    <span class="match_full_date">{{ mat.match_date }}</span>
+                </div>
+                <div class="col-xs-1 versus">
+                    x
+                </div>
+                <div class="col-xs-3 away_team">
+                    <span class="badge">{{ mat.away_team_goals }}</span>
+                    <span class="logo">
+                        {% if mat.away_team.team.logo %}
+                            <img src="{% get_media_prefix %}teams_logos/{{ mat.away_team.team.logo }}" alt="{{ mat.away_team.team.short_name }}" />
+                        {% endif %}
+                    </span>
+                    {{ mat.away_team.team }}
+                </div>
+                <div class="col-xs-5">
+                    {{ mat.championship.championship.name }} ({{ mat.match_date.year }})<br/>
+                    {% if mat.stadium.full_name %}
+                    <span class="stadium">{{ mat.stadium.full_name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 moreDetails"><a href="{% url 'matches:details' mat.id %}">{% trans 'Mais detalhes' %} <i class="fa fa-caret-right"></i></a></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <hr/>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if matches.paginator.num_pages and matches.paginator.num_pages > 0 %}
+            <nav>
+                <ul class="pagination">
+                    {% if matches.number > 1 %}
+                    <li><a href="{% url 'matches:search_pagination' matches.previous_page_number %}"><span aria-hidden="true">&laquo;</span><span class="sr-only">Previous</span></a></li>
+                    {% endif %}
+            {% for i in matches.paginator.page_range %}
+                    <li {% if matches.number == i %} class='active' {% endif %} ><a href="{% url 'matches:search_pagination' i %}">{{ i }}</a></li>
+            {% endfor %}
+                    {% if matches.number < matches.paginator.num_pages %}
+                    <li><a href="{% url 'matches:search_pagination' matches.next_page_number %}"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+
+    </div>
+
+{% endblock search_results %}

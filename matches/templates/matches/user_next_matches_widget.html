@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load static %}
+
+{% if user_matches.count > 0 %}
+<div class="row">
+    <div class="col-xs-12 widgetNextMatchesCalendar">
+        <div class="header">{% trans 'Próximos jogos' %}</div>
+        <div class="body">
+            {% for m in user_matches %}
+                <div class="row">
+                    <div class="col-xs-3 date">{{ m.match_date|date:"d" }}<br/>{{ m.match_date|date:"b"|upper }}</div>
+                    <div class="col-xs-2 logoHomeTeam">
+                        <img src="{% get_media_prefix %}teams_logos/{{ m.home_team.team.logo }}" alt="{{ m.home_team.team.short_name }}"/>
+                    </div>
+                    <div class="col-xs-5 teams">
+                        {{ m.home_team.team.short_name }}
+                        <br/>x<br/>
+                        {{ m.away_team.team.short_name }}
+                    </div>
+                    <div class="col-xs-2 logoAwayTeam">
+                        <img src="{% get_media_prefix %}teams_logos/{{ m.away_team.team.logo }}" alt="{{ m.away_team.team.short_name }}"/>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
